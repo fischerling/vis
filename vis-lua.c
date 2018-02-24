@@ -23,6 +23,7 @@
 
 #include "vis-lua.h"
 #include "vis-core.h"
+#include "vis-subprocess.h"
 #include "text-motions.h"
 #include "util.h"
 
@@ -1368,6 +1369,31 @@ static int redraw(lua_State *L) {
 	return 0;
 }
 /***
+ * Open new process and return its input handler.
+ * When the process will output anything to stdout or stderr,
+ * the PROCESS_RESPONCE event will be fired.
+ *
+ * The editor core will not be blocked while the external process is running.
+ *
+ * @function communicate
+ * @tparam string name the name of subprocess (to distinguish processes in the PROCESS_RESPONCE event)
+ * @tparam string command the command to execute
+ * @treturn FileHandle inputfd the file handle to write data to the process
+ */
+static int communicate_func(lua_State *L) {
+	Vis *vis = obj_ref_check(L, 1, "vis");
+	const char *name = luaL_checkstring(L, 2);
+	const char *cmd = luaL_checkstring(L, 3);
+	FILE **inputfd = (FILE **)lua_newuserdata(L, sizeof(FILE *));
+	luaL_getmetatable(L, LUA_FILEHANDLE);
+	lua_setmetatable(L, -2);
+	vis_process_communicate(vis, name, cmd, inputfd);
+	if (*inputfd == NULL) {
+	  /*lua_pushfstring(L, "%s: command %s failed: %s", name, cmd, strerror(errno));*/
+	}
+	return 1;
+}
+/***
  * Currently active window.
  * @tfield Window win
  * @see windows
@@ -1524,6 +1550,7 @@ static const struct luaL_Reg vis_lua[] = {
 	{ "exit", exit_func },
 	{ "pipe", pipe_func },
 	{ "redraw", redraw },
+	{ "communicate", communicate_func },
 	{ "__index", vis_index },
 	{ "__newindex", vis_newindex },
 	{ NULL, NULL },
@@ -3132,6 +3159,28 @@ void vis_lua_term_csi(Vis *vis, const long *csi) {
 		for (int i = 0; i < nargs; i++)
 			lua_pushinteger(L, csi[2 + i]);
 		pcall(vis, L, 1 + nargs, 0);
+	}
+	lua_pop(L, 1);
+}
+/***
+ * Process have written new line into stdout or stderr.
+ * @function process_responce
+ * @tparam string name the name of process given to vis:communicate()
+ * @tparam string buffer the line of content written by process
+ * @tparam bool is_err true if the line is written to the stderr, otherwise false
+ * @see status
+ */
+void vis_lua_process_responce(Vis *vis, const char *name,
+                              char *buffer, size_t len, ResponceType iserr) {
+	lua_State *L = vis->lua;
+	if (!L)
+		return;
+	vis_lua_event_get(L, "process_responce");
+	if (lua_isfunction(L, -1)) {
+		lua_pushstring(L, name);
+		lua_pushlstring(L, buffer, len);
+		lua_pushboolean(L, iserr);
+		pcall(vis, L, 3, 0);
 	}
 	lua_pop(L, 1);
 }
