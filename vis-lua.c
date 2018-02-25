@@ -1405,7 +1405,7 @@ static int communicate_func(lua_State *L) {
 	luaL_setmetatable(L, LUA_FILEHANDLE);
 	inputfd->handler = vis_process_communicate(vis, name, cmd, (void **)(&(inputfd->closef)));
 	if (inputfd->handler) {
-		inputfd->f = inputfd->handler->inpfd;
+		inputfd->f = fdopen(inputfd->handler->inpfd, "w");
 		inputfd->closef = &close_subprocess;
 	}
 	return inputfd->f ? 1 : luaL_fileresult(L, inputfd->f == NULL, name);
