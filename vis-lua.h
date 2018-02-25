@@ -11,7 +11,12 @@ typedef struct lua_State lua_State;
 
 #include "vis.h"
 #include "vis-subprocess.h"
-
+typedef struct {
+  /* Lua stream structure for the process input stream */
+  FILE *f;
+  lua_CFunction closef;
+  Process *handler;
+} ProcessStream;
 /* add a directory to consider when loading lua files */
 bool vis_lua_path_add(Vis*, const char *path);
 /* get semicolon separated list of paths to load lua files

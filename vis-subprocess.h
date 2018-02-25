@@ -7,13 +7,14 @@ struct Process {
 	FILE *outfd;
 	FILE *errfd;
 	FILE **infd;
+	void **invalidator;
 	struct Process *next;
 };
 
 typedef struct Process Process;
 typedef enum { STDOUT, STDERR } ResponceType;
 
-void vis_process_communicate(Vis *, const char *command, const char *name,
-                             FILE **input);
+Process *vis_process_communicate(Vis *, const char *command, const char *name,
+                                 void **invalidator);
 void vis_process_tick(Vis *);
 #endif

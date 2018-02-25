@@ -14,6 +14,7 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 #include <limits.h>
 #include <unistd.h>
@@ -1369,6 +1370,22 @@ static int redraw(lua_State *L) {
 	return 0;
 }
 /***
+ * Closes a stream retrurned by vis.communicate().
+ *
+ * @function close
+ * @tparam FILE* inputfd the stream to be closed
+ * @treturn status bool the same with io.close()
+ */
+static int close_subprocess(lua_State *L) {
+  luaL_Stream *file = luaL_checkudata(L, -1, "FILE*");
+  int result = fclose(file->f);
+  if (result == 0) {
+    file->f = NULL;
+    file->closef = NULL;
+  }
+  return luaL_fileresult(L, result == 0, NULL);
+}
+/***
  * Open new process and return its input handler.
  * When the process will output anything to stdout or stderr,
  * the PROCESS_RESPONCE event will be fired.
@@ -1384,14 +1401,14 @@ static int communicate_func(lua_State *L) {
 	Vis *vis = obj_ref_check(L, 1, "vis");
 	const char *name = luaL_checkstring(L, 2);
 	const char *cmd = luaL_checkstring(L, 3);
-	FILE **inputfd = (FILE **)lua_newuserdata(L, sizeof(FILE *));
-	luaL_getmetatable(L, LUA_FILEHANDLE);
-	lua_setmetatable(L, -2);
-	vis_process_communicate(vis, name, cmd, inputfd);
-	if (*inputfd == NULL) {
-	  /*lua_pushfstring(L, "%s: command %s failed: %s", name, cmd, strerror(errno));*/
+	ProcessStream *inputfd = (ProcessStream *)lua_newuserdata(L, sizeof(ProcessStream));
+	luaL_setmetatable(L, LUA_FILEHANDLE);
+	inputfd->handler = vis_process_communicate(vis, name, cmd, (void **)(&(inputfd->closef)));
+	if (inputfd->handler) {
+		inputfd->f = inputfd->handler->inpfd;
+		inputfd->closef = &close_subprocess;
 	}
-	return 1;
+	return inputfd->f ? 1 : luaL_fileresult(L, inputfd->f == NULL, name);
 }
 /***
  * Currently active window.
