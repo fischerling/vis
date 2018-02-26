@@ -163,6 +163,8 @@ void vis_lua_win_close(Vis *vis, Win *win) { }
 void vis_lua_win_highlight(Vis *vis, Win *win) { }
 void vis_lua_win_status(Vis *vis, Win *win) { window_status_update(vis, win); }
 void vis_lua_term_csi(Vis *vis, const long *csi) { }
+void vis_lua_process_responce(Vis *vis, const char *name,
+                              char *buffer, size_t len, ResponceType rtype) { };
 
 #else
 

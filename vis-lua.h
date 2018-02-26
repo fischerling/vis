@@ -7,6 +7,7 @@
 #include <lauxlib.h>
 #else
 typedef struct lua_State lua_State;
+typedef void* lua_CFunction;
 #endif
 
 #include "vis.h"
