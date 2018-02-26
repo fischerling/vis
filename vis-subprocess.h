@@ -1,7 +1,7 @@
 #ifndef VIS_SUBPROCESS_H
 #define VIS_SUBPROCESS_H
 #include "vis-core.h"
-#include <sys/types.h>
+#include <sys/select.h>
 
 struct Process {
 	const char *name;
