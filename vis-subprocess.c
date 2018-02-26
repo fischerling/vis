@@ -71,10 +71,14 @@ closeouterr:
 closeerr:
 	close(perr[0]);
 	close(perr[1]);
-	if (pid == 0) /* start command in child process */
+	if (pid == 0) { /* start command in child process */
 		execlp(vis->shell, vis->shell, "-c", command, (char*)NULL);
+		fprintf(stderr, "exec failed: %s(%d)\n", strerror(errno), errno);
+		exit(1);
+	}
 	else
 		vis_info_show(vis, "process creation failed: %s", strerror(errno));
+	return NULL;
 }
 
 void destroy(Process **pointer) {
