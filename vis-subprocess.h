@@ -3,12 +3,11 @@
 #include "vis-core.h"
 #include <unistd.h>
 
-
 struct Process {
 	const char *name;
-	FILE *outfd;
-	FILE *errfd;
-	FILE **infd;
+	int outfd;
+	int errfd;
+	int inpfd;
 	pid_t pid;
 	void **invalidator;
 	struct Process *next;

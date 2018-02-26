@@ -14,7 +14,6 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdio.h>
-#include <errno.h>
 #include <string.h>
 #include <limits.h>
 #include <unistd.h>
@@ -1377,13 +1376,13 @@ static int redraw(lua_State *L) {
  * @treturn status bool the same with io.close()
  */
 static int close_subprocess(lua_State *L) {
-  luaL_Stream *file = luaL_checkudata(L, -1, "FILE*");
-  int result = fclose(file->f);
-  if (result == 0) {
-    file->f = NULL;
-    file->closef = NULL;
-  }
-  return luaL_fileresult(L, result == 0, NULL);
+	luaL_Stream *file = luaL_checkudata(L, -1, "FILE*");
+	int result = fclose(file->f);
+	if (result == 0) {
+		file->f = NULL;
+		file->closef = NULL;
+	}
+	return luaL_fileresult(L, result == 0, NULL);
 }
 /***
  * Open new process and return its input handler.
@@ -1408,7 +1407,7 @@ static int communicate_func(lua_State *L) {
 		inputfd->f = fdopen(inputfd->handler->inpfd, "w");
 		inputfd->closef = &close_subprocess;
 	}
-	return inputfd->f ? 1 : luaL_fileresult(L, inputfd->f == NULL, name);
+	return inputfd->f ? 1 : luaL_fileresult(L, inputfd->f != NULL, name);
 }
 /***
  * Currently active window.
