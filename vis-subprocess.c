@@ -7,19 +7,35 @@
 #include "vis-lua.h"
 #include "vis-subprocess.h"
 
+/* Maximum amount of data what can be read from IPC pipe per event */
 #define MAXBUFFER 1024
 
-static Process *process_pull;
+/* Pool of information about currently running subprocesses */
+static Process *process_pool;
 
-Process *new_in_pull() {
+Process *new_in_pool() {
+	/* Adds new empty process information structure to the process pool and
+	 * returns it */
 	Process *newprocess = (Process *)malloc(sizeof(Process));
-	newprocess->next = process_pull;
-	process_pull = newprocess;
+	newprocess->next = process_pool;
+	process_pool = newprocess;
 	return newprocess;
 }
 
 Process *vis_process_communicate(Vis *vis, const char *name,
                                  const char *command, void **invalidator) {
+	/* Starts new subprocess by passing the `command` to the shell and
+	 * returns the subprocess information structure, containing file descriptors
+	 * of the process.
+	 * Also stores the subprocess information to the internal pool to track
+	 * its status and responces.
+	 * `name` - the string than should contain an unique name of the subprocess.
+	 * This name will be passed to the PROCESS_RESPONCE event handler
+	 * to distinguish running subprocesses.
+	 * `invalidator` - a pointer to the pointer which shows that the subprocess
+	 * is invalid when set to NULL. When subprocess dies, it is being set to NULL.
+	 * If the pointer is set to NULL by an external code, the subprocess will be
+	 * killed on the next main loop iteration. */
 	int pin[2], pout[2], perr[2];
 	pid_t pid = (pid_t)-1;
 	if (pipe(perr) == -1) goto closeerr;
@@ -37,7 +53,7 @@ Process *vis_process_communicate(Vis *vis, const char *name,
 		close(pin[0]);
 		close(pout[1]);
 		close(perr[1]);
-		Process *new = new_in_pull();
+		Process *new = new_in_pool();
 		new->name = name;
 		new->outfd = pout[0];
 		new->errfd = perr[0];
@@ -62,6 +78,8 @@ closeerr:
 }
 
 void destroy(Process **pointer) {
+	/* Removes the subprocess information from the pool, sets invalidator to NULL
+	 * and frees resources. */
 	Process *target = *pointer;
 	if (target->outfd != -1) close(target->outfd);
 	if (target->errfd != -1) close(target->errfd);
@@ -73,7 +91,10 @@ void destroy(Process **pointer) {
 }
 
 int vis_process_before_tick(fd_set *readfds) {
-	Process **pointer = &process_pull;
+	/* Adds file descriptors of currently running subprocesses to the `readfds`
+	 * to track their readiness and returns maximum file descriptor value
+	 * to pass it to the `pselect` call */
+	Process **pointer = &process_pool;
 	int maxfd = 0;
 	while (*pointer) {
 		Process *current = *pointer;
@@ -91,6 +112,9 @@ int vis_process_before_tick(fd_set *readfds) {
 }
 
 void read_and_fire(Vis* vis, int fd, const char *name, ResponceType rtype) {
+	/* Reads data from the given subprocess file descriptor `fd` and fires
+	 * the PROCESS_RESPONCE event in Lua with given subprocess `name`,
+	 * `rtype` and the read data as arguments. */
   static char buffer[MAXBUFFER];
   size_t obtained = read(fd, &buffer, MAXBUFFER-1);
   if (obtained > 0)
@@ -98,7 +122,11 @@ void read_and_fire(Vis* vis, int fd, const char *name, ResponceType rtype) {
 }
 
 void vis_process_tick(Vis *vis, fd_set *readfds) {
-	Process **pointer = &process_pull;
+	/* Checks if `readfds` contains file discriptors of subprocesses from
+	 * the pool. If so, reads the data from them and fires corresponding events.
+	 * Also checks if subprocesses from pool is dead or need to be killed then
+	 * raises event or kills it if necessary. */
+	Process **pointer = &process_pool;
 	while (*pointer) {
 		Process *current = *pointer;
 		if (current->outfd != -1 && FD_ISSET(current->outfd, readfds))
