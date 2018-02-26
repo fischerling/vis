@@ -63,7 +63,7 @@ closeerr:
 
 void destroy(Process **pointer) {
 	Process *target = *pointer;
-	if (target->outfd != -2) close(target->outfd);
+	if (target->outfd != -1) close(target->outfd);
 	if (target->errfd != -1) close(target->errfd);
 	if (target->inpfd != -1) close(target->inpfd);
 	/* marking stream as closed for lua */
