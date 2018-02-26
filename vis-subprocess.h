@@ -14,7 +14,7 @@ struct Process {
 };
 
 typedef struct Process Process;
-typedef enum { STDOUT, STDERR } ResponceType;
+typedef enum { STDOUT, STDERR, SIGNAL, EXIT } ResponceType;
 
 Process *vis_process_communicate(Vis *, const char *command, const char *name,
                                  void **invalidator);

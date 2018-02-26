@@ -90,11 +90,11 @@ int vis_process_before_tick(fd_set *readfds) {
 	return maxfd;
 }
 
-void read_and_fire(Vis* vis, int fd, const char *name, ResponceType iserr) {
+void read_and_fire(Vis* vis, int fd, const char *name, ResponceType rtype) {
   static char buffer[MAXBUFFER];
   size_t obtained = read(fd, &buffer, MAXBUFFER-1);
   if (obtained > 0)
-    vis_lua_process_responce(vis, name, buffer, obtained, iserr);
+    vis_lua_process_responce(vis, name, buffer, obtained, rtype);
 }
 
 void vis_process_tick(Vis *vis, fd_set *readfds) {
@@ -105,17 +105,21 @@ void vis_process_tick(Vis *vis, fd_set *readfds) {
 			read_and_fire(vis, current->outfd, current->name, STDOUT);
 		if (current->errfd != -1 && FD_ISSET(current->errfd, readfds))
 			read_and_fire(vis, current->errfd, current->name, STDERR);
-		pid_t wpid = waitpid(current->pid, NULL, WNOHANG);
+		int status;
+		pid_t wpid = waitpid(current->pid, &status, WNOHANG);
 		if (wpid == -1)	vis_message_show(vis, strerror(errno));
 		else if (wpid == current->pid) goto just_destroy;
-		else if(current->outfd == -1 || current->errfd == -1 ||
-		        current->inpfd == -1) goto kill_and_destroy;
+		else if(!*(current->invalidator)) goto kill_and_destroy;
 		pointer = &current->next;
 		continue;
 kill_and_destroy:
 		kill(current->pid, SIGTERM);
-		waitpid(current->pid, NULL, 0);
+		waitpid(current->pid, &status, 0);
 just_destroy:
+		if (WIFSIGNALED(status))
+			vis_lua_process_responce(vis, current->name, NULL, WTERMSIG(status), SIGNAL);
+		else
+			vis_lua_process_responce(vis, current->name, NULL, WEXITSTATUS(status), EXIT);
 		destroy(pointer);
   }
 }

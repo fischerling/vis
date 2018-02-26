@@ -3182,20 +3182,28 @@ void vis_lua_term_csi(Vis *vis, const long *csi) {
  * Process have written new line into stdout or stderr.
  * @function process_responce
  * @tparam string name the name of process given to vis:communicate()
- * @tparam string buffer the line of content written by process
- * @tparam bool is_err true if the line is written to the stderr, otherwise false
+ * @tparam string responce_type can be "STDOUT" or "STDERR" if the data was received in corresponding channel, "SIGNAL" if the process was terminated by a signal or "EXIT" when the process terminated normally
+ * @tparam string buffer the available content sent by process; it becomes the integer with exit code if responce_type is "EXIT", or the integer with a signal if responce_type is "SIGNAL"
  * @see status
  */
 void vis_lua_process_responce(Vis *vis, const char *name,
-                              char *buffer, size_t len, ResponceType iserr) {
+                              char *buffer, size_t len, ResponceType rtype) {
 	lua_State *L = vis->lua;
 	if (!L)
 		return;
 	vis_lua_event_get(L, "process_responce");
 	if (lua_isfunction(L, -1)) {
 		lua_pushstring(L, name);
-		lua_pushlstring(L, buffer, len);
-		lua_pushboolean(L, iserr);
+		if (rtype == EXIT || rtype == SIGNAL)
+			lua_pushinteger(L, len);
+		else
+			lua_pushlstring(L, buffer, len);
+		switch (rtype){
+		case STDOUT: lua_pushstring(L, "STDOUT"); break;;
+		case STDERR: lua_pushstring(L, "STDERR"); break;;
+		case SIGNAL: lua_pushstring(L, "SIGNAL"); break;;
+		case EXIT: lua_pushstring(L, "EXIT"); break;;
+		}
 		pcall(vis, L, 3, 0);
 	}
 	lua_pop(L, 1);
