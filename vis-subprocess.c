@@ -45,6 +45,13 @@ Process *vis_process_communicate(Vis *vis, const char *name,
 	if (pid == -1)
 		vis_info_show(vis, "fork failed: %s", strerror(errno));
 	else if (pid == 0){ /* child process */
+		sigset_t sigterm_mask;
+		sigemptyset(&sigterm_mask);
+		sigaddset(&sigterm_mask, SIGTERM);
+		if (sigprocmask(SIG_UNBLOCK, &sigterm_mask, NULL) == -1) {
+			fprintf(stderr, "failed to reset signal mask");
+			exit(EXIT_FAILURE);
+		}
 		dup2(pin[0], STDIN_FILENO);
 		dup2(pout[1], STDOUT_FILENO);
 		dup2(perr[1], STDERR_FILENO);
