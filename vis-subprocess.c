@@ -17,9 +17,24 @@ Process *new_in_pool() {
 	/* Adds new empty process information structure to the process pool and
 	 * returns it */
 	Process *newprocess = (Process *)malloc(sizeof(Process));
+	if (!newprocess) return NULL;
 	newprocess->next = process_pool;
 	process_pool = newprocess;
 	return newprocess;
+}
+
+void destroy(Process **pointer) {
+	/* Removes the subprocess information from the pool, sets invalidator to NULL
+	 * and frees resources. */
+	Process *target = *pointer;
+	if (target->outfd != -1) close(target->outfd);
+	if (target->errfd != -1) close(target->errfd);
+	if (target->inpfd != -1) close(target->inpfd);
+	/* marking stream as closed for lua */
+	if (target->invalidator) *(target->invalidator) = NULL;
+	if (target->name) free(target->name);
+	*pointer = target->next;
+	free(target);
 }
 
 Process *vis_process_communicate(Vis *vis, const char *name,
@@ -57,16 +72,26 @@ Process *vis_process_communicate(Vis *vis, const char *name,
 		dup2(perr[1], STDERR_FILENO);
 	}
 	else { /* main process */
-		close(pin[0]);
-		close(pout[1]);
-		close(perr[1]);
 		Process *new = new_in_pool();
+		if (!new) {
+			vis_info_show(vis, "Can not create process: %s", strerror(errno));
+			goto closeall;
+		}
 		new->name = strdup(name);
+		if (!new->name) {
+			vis_info_show(vis, "Can not copy process name: %s", strerror(errno));
+			/* pop top element (which is `new`) from the pool */
+			destroy(&process_pool);
+			goto closeall;
+		}
 		new->outfd = pout[0];
 		new->errfd = perr[0];
 		new->inpfd = pin[1];
 		new->pid = pid;
 		new->invalidator = invalidator;
+		close(pin[0]);
+		close(pout[1]);
+		close(perr[1]);
 		return new;
 	}
 closeall:
@@ -86,20 +111,6 @@ closeerr:
 	else
 		vis_info_show(vis, "process creation failed: %s", strerror(errno));
 	return NULL;
-}
-
-void destroy(Process **pointer) {
-	/* Removes the subprocess information from the pool, sets invalidator to NULL
-	 * and frees resources. */
-	Process *target = *pointer;
-	if (target->outfd != -1) close(target->outfd);
-	if (target->errfd != -1) close(target->errfd);
-	if (target->inpfd != -1) close(target->inpfd);
-	/* marking stream as closed for lua */
-	if (target->invalidator) *(target->invalidator) = NULL;
-	if (target->name) free(target->name);
-	*pointer = target->next;
-	free(target);
 }
 
 int vis_process_before_tick(fd_set *readfds) {
