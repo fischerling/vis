@@ -61,7 +61,7 @@ Process *vis_process_communicate(Vis *vis, const char *name,
 		close(pout[1]);
 		close(perr[1]);
 		Process *new = new_in_pool();
-		new->name = name;
+		new->name = strdup(name);
 		new->outfd = pout[0];
 		new->errfd = perr[0];
 		new->inpfd = pin[1];
@@ -97,6 +97,7 @@ void destroy(Process **pointer) {
 	if (target->inpfd != -1) close(target->inpfd);
 	/* marking stream as closed for lua */
 	if (target->invalidator) *(target->invalidator) = NULL;
+	if (target->name) free(target->name);
 	*pointer = target->next;
 	free(target);
 }

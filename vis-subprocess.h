@@ -4,7 +4,7 @@
 #include <sys/select.h>
 
 struct Process {
-	const char *name;
+	char *name;
 	int outfd;
 	int errfd;
 	int inpfd;
