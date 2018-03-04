@@ -1371,11 +1371,11 @@ static int redraw(lua_State *L) {
 	return 0;
 }
 /***
- * Closes a stream retrurned by vis.communicate().
+ * Closes a stream returned by @{Vis.communicate}.
  *
  * @function close
- * @tparam FILE* inputfd the stream to be closed
- * @treturn status bool the same with io.close()
+ * @tparam io.file inputfd the stream to be closed
+ * @treturn bool the same with @{io.close}
  */
 static int close_subprocess(lua_State *L) {
 	luaL_Stream *file = luaL_checkudata(L, -1, "FILE*");
@@ -1388,15 +1388,15 @@ static int close_subprocess(lua_State *L) {
 }
 /***
  * Open new process and return its input handler.
- * When the process will output anything to stdout or stderr,
- * the PROCESS_RESPONCE event will be fired.
+ * When the process will quit or will output anything to stdout or stderr,
+ * the @{process_responce} event will be fired.
  *
- * The editor core will not be blocked while the external process is running.
+ * The editor core won't be blocked while the external process is running.
  *
  * @function communicate
- * @tparam string name the name of subprocess (to distinguish processes in the PROCESS_RESPONCE event)
+ * @tparam string name the name of subprocess (to distinguish processes in the @{process_responce} event)
  * @tparam string command the command to execute
- * @treturn FileHandle inputfd the file handle to write data to the process
+ * @return the file handle to write data to the process, in case of error the return values are equivalent to @{io.open} error values.
  */
 static int communicate_func(lua_State *L) {
 	Vis *vis = obj_ref_check(L, 1, "vis");
@@ -3181,12 +3181,11 @@ void vis_lua_term_csi(Vis *vis, const long *csi) {
 	lua_pop(L, 1);
 }
 /***
- * Process have written new line into stdout or stderr.
+ * The responce received from the process started via @{Vis:communicate}.
  * @function process_responce
- * @tparam string name the name of process given to vis:communicate()
- * @tparam string responce_type can be "STDOUT" or "STDERR" if the data was received in corresponding channel, "SIGNAL" if the process was terminated by a signal or "EXIT" when the process terminated normally
- * @tparam string buffer the available content sent by process; it becomes the integer with exit code if responce_type is "EXIT", or the integer with a signal if responce_type is "SIGNAL"
- * @see status
+ * @tparam string name the name of process given to @{Vis:communicate}
+ * @tparam string responce_type can be "STDOUT" or "STDERR" if new output was received in corresponding channel, "SIGNAL" if the process was terminated by a signal or "EXIT" when the process terminated normally
+ * @tparam string|int buffer the available content sent by process; it becomes the exit code number if responce\_type is "EXIT", or the signal number if responce\_type is "SIGNAL"
  */
 void vis_lua_process_responce(Vis *vis, const char *name,
                               char *buffer, size_t len, ResponceType rtype) {
@@ -3201,10 +3200,10 @@ void vis_lua_process_responce(Vis *vis, const char *name,
 		else
 			lua_pushlstring(L, buffer, len);
 		switch (rtype){
-		case STDOUT: lua_pushstring(L, "STDOUT"); break;;
-		case STDERR: lua_pushstring(L, "STDERR"); break;;
-		case SIGNAL: lua_pushstring(L, "SIGNAL"); break;;
-		case EXIT: lua_pushstring(L, "EXIT"); break;;
+		case STDOUT: lua_pushstring(L, "STDOUT"); break;
+		case STDERR: lua_pushstring(L, "STDERR"); break;
+		case SIGNAL: lua_pushstring(L, "SIGNAL"); break;
+		case EXIT: lua_pushstring(L, "EXIT"); break;
 		}
 		pcall(vis, L, 3, 0);
 	}
