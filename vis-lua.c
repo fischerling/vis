@@ -53,6 +53,13 @@
 #define debug(...) do { } while (0)
 #endif
 
+typedef struct {
+	/* Lua stream structure for the process input stream */
+	FILE *f;
+	lua_CFunction closef;
+	Process *handler;
+} ProcessStream;
+
 static void window_status_update(Vis *vis, Win *win) {
 	char left_parts[4][255] = { "", "", "", "" };
 	char right_parts[4][32] = { "", "", "", "" };
