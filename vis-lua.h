@@ -39,6 +39,6 @@ void vis_lua_win_close(Vis*, Win*);
 void vis_lua_win_highlight(Vis*, Win*);
 void vis_lua_win_status(Vis*, Win*);
 void vis_lua_term_csi(Vis*, const long *);
-void vis_lua_process_responce(Vis *, const char *, char *, size_t, ResponceType);
+void vis_lua_process_response(Vis *, const char *, char *, size_t, ResponseType);
 
 #endif
