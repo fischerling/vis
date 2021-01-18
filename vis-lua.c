@@ -3200,7 +3200,7 @@ void vis_lua_process_response(Vis *vis, const char *name,
 	lua_State *L = vis->lua;
 	if (!L)
 		return;
-    vis_lua_event_get(L, "process_response");
+	vis_lua_event_get(L, "process_response");
 	if (lua_isfunction(L, -1)) {
 		lua_pushstring(L, name);
 		if (rtype == EXIT || rtype == SIGNAL)

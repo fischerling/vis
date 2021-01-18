@@ -152,7 +152,7 @@ local events = {
 	WIN_OPEN = "Event::WIN_OPEN", -- see @{win_open}
 	WIN_STATUS = "Event::WIN_STATUS", -- see @{win_status}
 	TERM_CSI = "Event::TERM_CSI", -- see @{term_csi}
-        PROCESS_RESPONSE = "Event::PROCESS_RESPONSE", -- see @{process_response}
+	PROCESS_RESPONSE = "Event::PROCESS_RESPONSE", -- see @{process_response}
 }
 
 events.file_close = function(...) events.emit(events.FILE_CLOSE, ...) end

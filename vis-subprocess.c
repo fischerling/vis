@@ -43,9 +43,9 @@ Process *vis_process_communicate(Vis *vis, const char *name,
 	 * returns the subprocess information structure, containing file descriptors
 	 * of the process.
 	 * Also stores the subprocess information to the internal pool to track
-     * its status and responses.
+	 * its status and responses.
 	 * `name` - the string than should contain an unique name of the subprocess.
-     * This name will be passed to the PROCESS_RESPONSE event handler
+	 * This name will be passed to the PROCESS_RESPONSE event handler
 	 * to distinguish running subprocesses.
 	 * `invalidator` - a pointer to the pointer which shows that the subprocess
 	 * is invalid when set to NULL. When subprocess dies, it is being set to NULL.
@@ -136,12 +136,12 @@ int vis_process_before_tick(fd_set *readfds) {
 
 void read_and_fire(Vis* vis, int fd, const char *name, ResponseType rtype) {
 	/* Reads data from the given subprocess file descriptor `fd` and fires
-     * the PROCESS_RESPONSE event in Lua with given subprocess `name`,
+	 * the PROCESS_RESPONSE event in Lua with given subprocess `name`,
 	 * `rtype` and the read data as arguments. */
-  static char buffer[MAXBUFFER];
-  size_t obtained = read(fd, &buffer, MAXBUFFER-1);
-  if (obtained > 0)
-    vis_lua_process_response(vis, name, buffer, obtained, rtype);
+	static char buffer[MAXBUFFER];
+	size_t obtained = read(fd, &buffer, MAXBUFFER-1);
+	if (obtained > 0)
+		vis_lua_process_response(vis, name, buffer, obtained, rtype);
 }
 
 void vis_process_tick(Vis *vis, fd_set *readfds) {
@@ -168,9 +168,9 @@ kill_and_destroy:
 		waitpid(current->pid, &status, 0);
 just_destroy:
 		if (WIFSIGNALED(status))
-            vis_lua_process_response(vis, current->name, NULL, WTERMSIG(status), SIGNAL);
+			vis_lua_process_response(vis, current->name, NULL, WTERMSIG(status), SIGNAL);
 		else
-            vis_lua_process_response(vis, current->name, NULL, WEXITSTATUS(status), EXIT);
+			vis_lua_process_response(vis, current->name, NULL, WEXITSTATUS(status), EXIT);
 		destroy(pointer);
-  }
+	}
 }
