@@ -119,4 +119,7 @@ struct UiWin {
 bool is_default_color(CellColor c);
 enum UiLayout ui_layout_get(Ui *ui);
 
+void ui_window_unstyle_lineno(UiWin*, size_t);
+void ui_window_style_lineno(UiWin*, size_t, enum UiStyle);
+
 #endif

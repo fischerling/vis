@@ -51,16 +51,25 @@ typedef struct {
 	bool doupdate;            /* Whether to update the screen after refreshing contents */
 } UiTerm;
 
+typedef struct LinenoStyle LinenoStyle;
+
+struct LinenoStyle {
+	size_t lineno;                  /* linenumber to style */
+	enum UiStyle style;             /* style to use for the line number */
+	LinenoStyle *next, *prev;       /* pointer to the neighbouring descriptors */
+};
+
 struct UiTermWin {
-	UiWin uiwin;              /* generic interface, has to be the first struct member */
-	UiTerm *ui;               /* ui which manages this window */
-	Win *win;                 /* editor window being displayed */
-	int id;                   /* unique identifier for this window */
-	int width, height;        /* window dimension including status bar */
-	int x, y;                 /* window position */
-	int sidebar_width;        /* width of the sidebar showing line numbers etc. */
-	UiTermWin *next, *prev;   /* pointers to neighbouring windows */
-	enum UiOption options;    /* display settings for this window */
+	UiWin uiwin;                /* generic interface, has to be the first struct member */
+	UiTerm *ui;                 /* ui which manages this window */
+	Win *win;                   /* editor window being displayed */
+	int id;                     /* unique identifier for this window */
+	int width, height;          /* window dimension including status bar */
+	int x, y;                   /* window position */
+	int sidebar_width;          /* width of the sidebar showing line numbers etc. */
+	LinenoStyle *lineno_styles; /* line number styles */
+	UiTermWin *next, *prev;     /* pointers to neighbouring windows */
+	enum UiOption options;      /* display settings for this window */
 };
 
 #if CONFIG_CURSES
@@ -256,6 +265,10 @@ static void ui_window_draw(UiWin *w) {
 	Cell *cells = ui->cells + y * ui->width;
 	if (x + sidebar_width + view_width > ui->width)
 		view_width = ui->width - x - sidebar_width;
+	LinenoStyle *lineno_style = win->lineno_styles;
+	while (line->lineno && lineno_style && line->lineno > lineno_style->lineno)
+		lineno_style = lineno_style->next; // skip not visible lineno styles
+
 	for (const Line *l = line; l; l = l->next, y++) {
 		if (sidebar) {
 			if (!l->lineno || !l->len || l->lineno == prev_lineno) {
@@ -272,13 +285,98 @@ static void ui_window_draw(UiWin *w) {
 				}
 				snprintf(buf, sizeof buf, "%*zu ", sidebar_width-1, number);
 			}
-			ui_draw_string(ui, x, y, buf, win,
-				(l->lineno == cursor_lineno) ? UI_STYLE_LINENUMBER_CURSOR : UI_STYLE_LINENUMBER);
+
+			enum UiStyle style;
+			if (lineno_style && lineno_style->lineno == l->lineno) {
+				style = lineno_style->style;
+				lineno_style = lineno_style->next;
+			} else
+				style = (l->lineno == cursor_lineno) ? UI_STYLE_LINENUMBER_CURSOR : UI_STYLE_LINENUMBER;
+
+			ui_draw_string(ui, x, y, buf, win, style);
 			prev_lineno = l->lineno;
 		}
 		debug("draw-window: [%d][%d] ... cells[%d][%d]\n", y, x+sidebar_width, y, view_width);
 		memcpy(&cells[x+sidebar_width], l->cells, sizeof(Cell) * view_width);
 		cells += ui->width;
+	}
+}
+
+static LinenoStyle* lineno_style_new(size_t lineno, enum UiStyle s) {
+	LinenoStyle* style = calloc(1, sizeof(LinenoStyle));
+	if (!style)
+		return NULL;
+	style->lineno = lineno;
+	style->style = s;
+	return style;
+}
+
+void ui_window_unstyle_lineno(UiWin *w, size_t lineno) {
+	UiTermWin *win = (UiTermWin*)w;
+	LinenoStyle *style = win->lineno_styles;
+	LinenoStyle *prev = NULL;
+	if (!style)
+		return;
+
+	while (style && style->lineno != lineno) {
+		prev = style;
+		style = style->next;
+	}
+
+	if (!style)
+		return;
+
+	if (!prev)
+		win->lineno_styles = NULL;
+	else {
+		prev->next = style->next;
+		if (style->next)
+			style->next->prev = prev;
+	}
+
+	free(style);
+}
+
+void ui_window_style_lineno(UiWin *w, size_t lineno, enum UiStyle s) {
+	UiTermWin *win = (UiTermWin*)w;
+	LinenoStyle *style = win->lineno_styles;
+	LinenoStyle *prev = NULL;
+
+	// First line number style
+	if (!style) {
+		win->lineno_styles = lineno_style_new(lineno, s);
+		return;
+	}
+
+	while (style && style->lineno < lineno) {
+		prev = style;
+		style = style->next;
+	}
+
+	if (style && style->lineno == lineno) {
+		style->style = s;
+		return;
+	}
+
+	LinenoStyle *new = lineno_style_new(lineno, s);
+	if (!new)
+		return;
+
+	// Append new style to list
+	if (!style) {
+		new->prev = prev;
+		prev->next = new;
+	}
+	else if (!prev) { // Prepend new style to list
+		win->lineno_styles = new;
+		new->next = style;
+		style->prev = new;
+	} else { // Insert new style into the list
+		new->prev = prev;
+		new->next = style;
+
+		style->prev = new;
+		prev->next = new;
 	}
 }
 

@@ -2087,6 +2087,28 @@ static int window_style(lua_State *L) {
 }
 
 /***
+ * Style a window line number.
+ *
+ * The style will never be cleared and must be reset manually.
+ * @function style_lineno
+ * @tparam int id the display style as registered with @{style_define}
+ * @tparam int lineno the absolute file position in bytes
+ * @see style_define
+ * @usage
+ * win:style_lineno(win.STYLE_DEFAULT, 42)
+ */
+static int window_style_lineno(lua_State *L) {
+	Win *win = obj_ref_check(L, 1, VIS_LUA_TYPE_WINDOW);
+	enum UiStyle style = luaL_checkunsigned(L, 2);
+	size_t lineno = checkpos(L, 3);
+	if (style == UI_STYLE_DEFAULT)
+		ui_window_unstyle_lineno(win->ui, lineno);
+	else
+		ui_window_style_lineno(win->ui, lineno, style);
+	return 0;
+}
+
+/***
  * Set window status line.
  *
  * @function status
@@ -2155,6 +2177,7 @@ static const struct luaL_Reg window_funcs[] = {
 	{ "unmap", window_unmap },
 	{ "style_define", window_style_define },
 	{ "style", window_style },
+	{ "style_lineno", window_style_lineno },
 	{ "status", window_status },
 	{ "draw", window_draw },
 	{ "close", window_close },
