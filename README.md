@@ -6,6 +6,13 @@
 [![Documentation Status](https://readthedocs.org/projects/vis/badge/?version=master)](http://vis.readthedocs.io/en/master/?badge=master)
 [![#vis-editor on libera](https://img.shields.io/badge/IRC-%23vis--editor-blue.svg)](ircs://irc.libera.chat:6697/vis-editor)
 
+This is a fork containing patches to enable and ease the use of the
+[vis-lspc](https://gitlab.com/muhq/vis-lspc) language server protocol plugin.
+
+Included Patches:
+
+* [style-line-numbers](https://github.com/fischerling/vis/tree/style-line-numbers) - allow lua to style line numbers to hint information to the user
+
 Vis aims to be a modern, legacy-free, simple yet efficient editor,
 combining the strengths of both vi(m) and sam.
 
