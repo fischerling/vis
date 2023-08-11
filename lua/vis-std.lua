@@ -84,7 +84,7 @@ vis.events.subscribe(vis.events.WIN_HIGHLIGHT, function(win)
 	local lex_start = viewport.start - horizon
 	viewport.start = lex_start
 	local data = win.file:content(viewport)
-	local token_styles = lexer._TOKENSTYLES
+	local token_styles = lexer._TAGS
 	local tokens, timedout = lexer:lex(data, 1, redrawtime_max)
 	local token_end = lex_start + (tokens[#tokens] or 1) - 1
 
