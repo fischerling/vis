@@ -1,4 +1,4 @@
--- Copyright 2021-2022 Mitchell. See LICENSE.
+-- Copyright 2021-2023 Mitchell. See LICENSE.
 -- Hare LPeg lexer
 -- https://harelang.org
 -- Contributed by Qiu
@@ -49,11 +49,12 @@ lex:add_rule('number', token(lexer.NUMBER, lexer.number))
 lex:add_rule('operator', token(lexer.OPERATOR, S('+-/*%^!=&|?:;,.()[]{}<>')))
 
 -- At rule.
-lex:add_rule('at_rule', token('at_rule', '@' * word_match('noreturn offset init fini test symbol')))
-lex:add_style('at_rule', lexer.styles.preprocessor)
+lex:add_rule('at_rule',
+  token(lexer.ANNOTATION, '@' * word_match('noreturn offset init fini test symbol')))
 
 -- Fold points.
 lex:add_fold_point(lexer.OPERATOR, '{', '}')
-lex:add_fold_point(lexer.COMMENT, lexer.fold_consecutive_lines('//'))
+
+lexer.property['scintillua.comment'] = '//'
 
 return lex
