@@ -30,11 +30,12 @@
 <h2>Contents</h2>
 <ul>
 <li><a href="#Class_Vis">Class Vis </a></li>
+<li><a href="#Class_Ui">Class Ui </a></li>
 <li><a href="#Class_Window">Class Window </a></li>
 <li><a href="#Class_Selection">Class Selection </a></li>
 <li><a href="#Class_File">Class File </a></li>
-<li><a href="#Class_Ui">Class Ui </a></li>
 <li><a href="#Class_Range">Class Range </a></li>
+<li><a href="#Layouts">Layouts </a></li>
 <li><a href="#Modes">Modes </a></li>
 <li><a href="#Key_Handling">Key Handling </a></li>
 <li><a href="#Core_Events">Core Events </a></li>
@@ -60,7 +61,7 @@
 </p>
     <h3>Info:</h3>
     <ul>
-        <li><strong>Release</strong>: fee2a40</li>
+        <li><strong>Release</strong>: 228de77</li>
         <li><strong>License</strong>: ISC</li>
         <li><strong>Author</strong>: Marc André Tanner</li>
     </ul>
@@ -105,6 +106,10 @@
 	<td class="summary">Mode constants.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#Vis.options">Vis.options</a></td>
+	<td class="summary">Vis Options</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#Vis.recording">Vis.recording</a></td>
 	<td class="summary">Whether a macro is being recorded.</td>
 	</tr>
@@ -130,7 +135,7 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Vis:close">Vis:close(inputfd)</a></td>
-	<td class="summary">Closes a stream returned by ???.</td>
+	<td class="summary">Closes a stream returned by <a href="index.html#Vis:communicate">Vis:communicate</a>.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Vis:command">Vis:command(command)</a></td>
@@ -142,7 +147,7 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Vis:communicate">Vis:communicate(name, command)</a></td>
-	<td class="summary">Open new process and return its input handler.</td>
+	<td class="summary">Open new process and return its input stream (stdin).</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Vis:exit">Vis:exit(code)</a></td>
@@ -165,12 +170,12 @@
 	<td class="summary">Insert keys at all cursor positions of active window.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Vis:map">Vis:map(mode, key, action)</a></td>
-	<td class="summary">Map a key to a key action.</td>
-	</tr>
-	<tr>
 	<td class="name" nowrap><a href="#Vis:map">Vis:map(mode, key, func[, help])</a></td>
 	<td class="summary">Map a key to a Lua function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Vis:map">Vis:map(mode, key, action)</a></td>
+	<td class="summary">Map a key to a key action.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Vis:map">Vis:map(mode, key, alias)</a></td>
@@ -209,7 +214,7 @@
 	<td class="summary">Unregister a `:set` option.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#Vis:pipe">Vis:pipe(file, range, command)</a></td>
+	<td class="name" nowrap><a href="#Vis:pipe">Vis:pipe([file][, range], command[, fullscreen])</a></td>
 	<td class="summary">Pipe file range to external process and collect output.</td>
 	</tr>
 	<tr>
@@ -237,6 +242,17 @@
 	<td class="summary">Create an iterator over all windows.</td>
 	</tr>
 </table>
+<h2><a href="#Class_Ui">Class Ui </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#Ui.colors">Ui.colors</a></td>
+	<td class="summary">Number of available colors.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Ui.layout">Ui.layout</a></td>
+	<td class="summary">Current layout.</td>
+	</tr>
+</table>
 <h2><a href="#Class_Window">Class Window </a></h2>
 <table class="function_list">
 	<tr>
@@ -250,6 +266,10 @@
 	<tr>
 	<td class="name" nowrap><a href="#Window.marks">Window.marks</a></td>
 	<td class="summary">Window marks.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#Window.options">Window.options</a></td>
+	<td class="summary">Window Options</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Window.selection">Window.selection</a></td>
@@ -302,10 +322,6 @@
 	<tr>
 	<td class="name" nowrap><a href="#Window:style_define">Window:style_define(id, style)</a></td>
 	<td class="summary">Define a display style.</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#Window:style_lineno">Window:style_lineno(id, lineno)</a></td>
-	<td class="summary">Style a window line number.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#Window:unmap">Window:unmap(...)</a></td>
@@ -370,6 +386,10 @@
 	<td class="summary">File permission.</td>
 	</tr>
 	<tr>
+	<td class="name" nowrap><a href="#File.savemethod">File.savemethod</a></td>
+	<td class="summary">File save method</td>
+	</tr>
+	<tr>
 	<td class="name" nowrap><a href="#File.size">File.size</a></td>
 	<td class="summary">File size in bytes.</td>
 	</tr>
@@ -418,13 +438,6 @@
 	<td class="summary">Word text object.</td>
 	</tr>
 </table>
-<h2><a href="#Class_Ui">Class Ui </a></h2>
-<table class="function_list">
-	<tr>
-	<td class="name" nowrap><a href="#Ui.colors">Ui.colors</a></td>
-	<td class="summary">Number of available colors.</td>
-	</tr>
-</table>
 <h2><a href="#Class_Range">Class Range </a></h2>
 <table class="function_list">
 	<tr>
@@ -434,6 +447,13 @@
 	<tr>
 	<td class="name" nowrap><a href="#Range.start">Range.start</a></td>
 	<td class="summary">The beginning of the range.</td>
+	</tr>
+</table>
+<h2><a href="#Layouts">Layouts </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#layouts">layouts</a></td>
+	<td class="summary">Layout Constants.</td>
 	</tr>
 </table>
 <h2><a href="#Modes">Modes </a></h2>
@@ -477,7 +497,7 @@
 	<td class="summary">Input key event in either input or replace mode.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#process_response">process_response(name, response_type, buffer)</a></td>
+	<td class="name" nowrap><a href="#process_response">process_response(name, response_type, code, buffer)</a></td>
 	<td class="summary">The response received from the process started via <a href="index.html#Vis:communicate">Vis:communicate</a>.</td>
 	</tr>
 	<tr>
@@ -719,6 +739,63 @@
 
 </dd>
     <dt>
+    <a name = "Vis.options"></a>
+    <strong>Vis.options</strong>
+    </dt>
+    <dd>
+    Vis Options
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">autoindent</span>
+            <span class="types"><span class="type">boolean</span></span>
+         {ai}
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">changecolors</span>
+            <span class="types"><span class="type">boolean</span></span>
+
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">escdelay</span>
+            <span class="types"><span class="type">int</span></span>
+
+         (<em>default</em> 50)
+        </li>
+        <li><span class="parameter">expandtab</span>
+            <span class="types"><span class="type">boolean</span></span>
+         {et}
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">ignorecase</span>
+            <span class="types"><span class="type">boolean</span></span>
+         {ic}
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">loadmethod</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         `"auto"`, `"read"`, or `"mmap"`.
+         (<em>default</em> "auto")
+        </li>
+        <li><span class="parameter">shell</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+
+         (<em>default</em> "/bin/sh")
+        </li>
+        <li><span class="parameter">tabwidth</span>
+            <span class="types"><span class="type">int</span></span>
+         {tw}
+         (<em>default</em> 8)
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
     <a name = "Vis.recording"></a>
     <strong>Vis.recording</strong>
     </dt>
@@ -867,7 +944,7 @@
     <strong>Vis:close(inputfd)</strong>
     </dt>
     <dd>
-    Closes a stream returned by ???.
+    Closes a stream returned by <a href="index.html#Vis:communicate">Vis:communicate</a>.
 
 
     <h3>Parameters:</h3>
@@ -882,7 +959,7 @@
     <ol>
 
            <span class="types"><span class="type">bool</span></span>
-        the same with <a href="https://www.lua.org/manual/5.1/manual.html#pdf-io.close">io.close</a>
+        identical to <a href="https://www.lua.org/manual/5.1/manual.html#pdf-io.close">io.close</a>
     </ol>
 
 
@@ -974,7 +1051,9 @@
     <strong>Vis:communicate(name, command)</strong>
     </dt>
     <dd>
-    Open new process and return its input handler.
+    Open new process and return its input stream (stdin).
+ If the stream is closed (by calling the close method or by being removed by a garbage collector)
+ the spawned process will be killed by SIGTERM.
  When the process will quit or will output anything to stdout or stderr,
  the <a href="index.html#process_response">process_response</a> event will be fired.
 <p> The editor core won't be blocked while the external process is running.
@@ -1133,52 +1212,6 @@
 </dd>
     <dt>
     <a name = "Vis:map"></a>
-    <strong>Vis:map(mode, key, action)</strong>
-    </dt>
-    <dd>
-    Map a key to a key action.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">mode</span>
-            <span class="types"><span class="type">int</span></span>
-         the mode to which the mapping should be added
-        </li>
-        <li><span class="parameter">key</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-         the key to map
-        </li>
-        <li><span class="parameter">action</span>
-         the action to map
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-
-           <span class="types"><span class="type">bool</span></span>
-        whether the mapping was successfully established
-    </ol>
-
-
-    <h3>See also:</h3>
-    <ul>
-         <a href="index.html#Window:map">Window:map</a>
-    </ul>
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example"><span class="keyword">local</span> action = vis:action_register(<span class="string">"info"</span>, <span class="keyword">function</span>()
-  vis:info(<span class="string">"Mapping works!"</span>)
-<span class="keyword">end</span>, <span class="string">"Info message help text"</span>)
-vis:map(vis.modes.NORMAL, <span class="string">"gh"</span>, action)
-vis:map(vis.modes.NORMAL, <span class="string">"gl"</span>, action)</pre>
-    </ul>
-
-</dd>
-    <dt>
-    <a name = "Vis:map"></a>
     <strong>Vis:map(mode, key, func[, help])</strong>
     </dt>
     <dd>
@@ -1233,6 +1266,52 @@ vis:map(vis.modes.NORMAL, <span class="string">"gl"</span>, action)</pre>
 		<span class="keyword">return</span> <span class="number">2</span> <span class="comment">-- consume 2 bytes of input
 </span>	<span class="keyword">end</span>
 <span class="keyword">end</span>, <span class="string">"Insert digraph"</span>)</pre>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "Vis:map"></a>
+    <strong>Vis:map(mode, key, action)</strong>
+    </dt>
+    <dd>
+    Map a key to a key action.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">mode</span>
+            <span class="types"><span class="type">int</span></span>
+         the mode to which the mapping should be added
+        </li>
+        <li><span class="parameter">key</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         the key to map
+        </li>
+        <li><span class="parameter">action</span>
+         the action to map
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+           <span class="types"><span class="type">bool</span></span>
+        whether the mapping was successfully established
+    </ol>
+
+
+    <h3>See also:</h3>
+    <ul>
+         <a href="index.html#Window:map">Window:map</a>
+    </ul>
+
+    <h3>Usage:</h3>
+    <ul>
+        <pre class="example"><span class="keyword">local</span> action = vis:action_register(<span class="string">"info"</span>, <span class="keyword">function</span>()
+  vis:info(<span class="string">"Mapping works!"</span>)
+<span class="keyword">end</span>, <span class="string">"Info message help text"</span>)
+vis:map(vis.modes.NORMAL, <span class="string">"gh"</span>, action)
+vis:map(vis.modes.NORMAL, <span class="string">"gl"</span>, action)</pre>
     </ul>
 
 </dd>
@@ -1575,11 +1654,12 @@ vis:map(vis.modes.NORMAL, <span class="string">"gl"</span>, action)</pre>
 </dd>
     <dt>
     <a name = "Vis:pipe"></a>
-    <strong>Vis:pipe(file, range, command)</strong>
+    <strong>Vis:pipe([file][, range], command[, fullscreen])</strong>
     </dt>
     <dd>
     Pipe file range to external process and collect output.
 <p> The editor core will be blocked while the external process is running.
+ File and Range can be omitted or nil to indicate empty input.
 
 
 
@@ -1588,14 +1668,21 @@ vis:map(vis.modes.NORMAL, <span class="string">"gl"</span>, action)</pre>
         <li><span class="parameter">file</span>
             <span class="types"><a class="type" href="index.html#Class_File">File</a></span>
          the file to which the range applies
+         (<em>optional</em>)
         </li>
         <li><span class="parameter">range</span>
             <span class="types"><a class="type" href="index.html#Class_Range">Range</a></span>
          the range to pipe
+         (<em>optional</em>)
         </li>
         <li><span class="parameter">command</span>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          the command to execute
+        </li>
+        <li><span class="parameter">fullscreen</span>
+            <span class="types"><span class="type">bool</span></span>
+         whether command is a fullscreen program (e.g. curses based)
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -1800,6 +1887,53 @@ vis:map(vis.modes.NORMAL, <span class="string">"gl"</span>, action)</pre>
 
 </dd>
 </dl>
+    <h2 class="section-header has-description"><a name="Class_Ui"></a>Class Ui </h2>
+
+          <div class="section-description">
+          The user interface.
+          </div>
+    <dl class="function">
+    <dt>
+    <a name = "Ui.colors"></a>
+    <strong>Ui.colors</strong>
+    </dt>
+    <dd>
+    Number of available colors.
+
+
+    <ul>
+        <li><span class="parameter">colors</span>
+            <span class="types"><span class="type">int</span></span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "Ui.layout"></a>
+    <strong>Ui.layout</strong>
+    </dt>
+    <dd>
+    Current layout.
+
+
+    <ul>
+        <li><span class="parameter">layout</span>
+            <span class="types"><a class="type" href="index.html#layouts">layouts</a></span>
+         current window layout.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
     <h2 class="section-header has-description"><a name="Class_Window"></a>Class Window </h2>
 
           <div class="section-description">
@@ -1867,6 +2001,73 @@ vis:map(vis.modes.NORMAL, <span class="string">"gl"</span>, action)</pre>
     <h3>See also:</h3>
     <ul>
     </ul>
+
+
+</dd>
+    <dt>
+    <a name = "Window.options"></a>
+    <strong>Window.options</strong>
+    </dt>
+    <dd>
+    Window Options
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">breakat</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         {brk}
+         (<em>default</em> "")
+        </li>
+        <li><span class="parameter">colorcolumn</span>
+            <span class="types"><span class="type">int</span></span>
+         {cc}
+         (<em>default</em> 0)
+        </li>
+        <li><span class="parameter">cursorline</span>
+            <span class="types"><span class="type">boolean</span></span>
+         {cul}
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">numbers</span>
+            <span class="types"><span class="type">boolean</span></span>
+         {nu}
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">relativenumbers</span>
+            <span class="types"><span class="type">boolean</span></span>
+         {rnu}
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">showeof</span>
+            <span class="types"><span class="type">boolean</span></span>
+
+         (<em>default</em> true)
+        </li>
+        <li><span class="parameter">shownewlines</span>
+            <span class="types"><span class="type">boolean</span></span>
+
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">showspaces</span>
+            <span class="types"><span class="type">boolean</span></span>
+
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">showtabs</span>
+            <span class="types"><span class="type">boolean</span></span>
+
+         (<em>default</em> false)
+        </li>
+        <li><span class="parameter">wrapcolumn</span>
+            <span class="types"><span class="type">int</span></span>
+         {wc}
+         (<em>default</em> 0)
+        </li>
+    </ul>
+
+
+
 
 
 </dd>
@@ -2191,40 +2392,6 @@ vis:map(vis.modes.NORMAL, <span class="string">"gl"</span>, action)</pre>
     <h3>Usage:</h3>
     <ul>
         <pre class="example">win:style_define(win.STYLE_DEFAULT, <span class="string">"fore:red"</span>)</pre>
-    </ul>
-
-</dd>
-    <dt>
-    <a name = "Window:style_lineno"></a>
-    <strong>Window:style_lineno(id, lineno)</strong>
-    </dt>
-    <dd>
-    Style a window line number.
-<p> The style will never be cleared and must be reset manually.
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">id</span>
-            <span class="types"><span class="type">int</span></span>
-         the display style as registered with <a href="index.html#Window:style_define">style_define</a>
-        </li>
-        <li><span class="parameter">lineno</span>
-            <span class="types"><span class="type">int</span></span>
-         the absolute file position in bytes
-        </li>
-    </ul>
-
-
-
-    <h3>See also:</h3>
-    <ul>
-         <a href="index.html#Window:style_define">style_define</a>
-    </ul>
-
-    <h3>Usage:</h3>
-    <ul>
-        <pre class="example">win:style_lineno(win.STYLE_DEFAULT, <span class="number">42</span>)</pre>
     </ul>
 
 </dd>
@@ -2598,6 +2765,27 @@ win.selection.pos = pos + #data</pre>
 
 </dd>
     <dt>
+    <a name = "File.savemethod"></a>
+    <strong>File.savemethod</strong>
+    </dt>
+    <dd>
+    File save method
+
+
+    <ul>
+        <li><span class="parameter">savemethod</span>
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         `"auto"`, `"atomic"`, or `"inplace"`.
+         (<em>default</em> "auto")
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
     <a name = "File.size"></a>
     <strong>File.size</strong>
     </dt>
@@ -2947,33 +3135,6 @@ win.selection.pos = pos + #data</pre>
 
 </dd>
 </dl>
-    <h2 class="section-header has-description"><a name="Class_Ui"></a>Class Ui </h2>
-
-          <div class="section-description">
-          The user interface.
-          </div>
-    <dl class="function">
-    <dt>
-    <a name = "Ui.colors"></a>
-    <strong>Ui.colors</strong>
-    </dt>
-    <dd>
-    Number of available colors.
-
-
-    <ul>
-        <li><span class="parameter">colors</span>
-            <span class="types"><span class="type">int</span></span>
-
-        </li>
-    </ul>
-
-
-
-
-
-</dd>
-</dl>
     <h2 class="section-header has-description"><a name="Class_Range"></a>Class Range </h2>
 
           <div class="section-description">
@@ -3012,6 +3173,35 @@ win.selection.pos = pos + #data</pre>
 
     <ul>
         <li><span class="parameter">start</span>
+            <span class="types"><span class="type">int</span></span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Layouts"></a>Layouts </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "layouts"></a>
+    <strong>layouts</strong>
+    </dt>
+    <dd>
+    Layout Constants.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">HORIZONTAL</span>
+            <span class="types"><span class="type">int</span></span>
+
+        </li>
+        <li><span class="parameter">VERTICAL</span>
             <span class="types"><span class="type">int</span></span>
 
         </li>
@@ -3299,7 +3489,7 @@ win.selection.pos = pos + #data</pre>
 </dd>
     <dt>
     <a name = "process_response"></a>
-    <strong>process_response(name, response_type, buffer)</strong>
+    <strong>process_response(name, response_type, code, buffer)</strong>
     </dt>
     <dd>
     The response received from the process started via <a href="index.html#Vis:communicate">Vis:communicate</a>.
@@ -3315,9 +3505,13 @@ win.selection.pos = pos + #data</pre>
             <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
          can be "STDOUT" or "STDERR" if new output was received in corresponding channel, "SIGNAL" if the process was terminated by a signal or "EXIT" when the process terminated normally
         </li>
+        <li><span class="parameter">code</span>
+            <span class="types"><span class="type">int</span></span>
+         the exit code number if response_type is "EXIT", or the signal number if response_type is "SIGNAL"
+        </li>
         <li><span class="parameter">buffer</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a> or <span class="type">int</span></span>
-         the available content sent by process; it becomes the exit code number if response\_type is "EXIT", or the signal number if response\_type is "SIGNAL"
+            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
+         the available content sent by the process
         </li>
     </ul>
 
@@ -3651,7 +3845,7 @@ win.selection.pos = pos + #data</pre>
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2023-06-05 09:10:08 </i>
+<i style="float:right;">Last updated 2023-09-06 22:15:48 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
