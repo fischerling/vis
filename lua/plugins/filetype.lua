@@ -167,10 +167,6 @@ vis.ftdetect.filetypes = {
 	gherkin = {
 		ext = { "%.feature$" },
 	},
-	['git-commit'] = {
-		ext = { "^COMMIT_EDITMSG$" },
-		cmd = { "set colorcolumn 72" },
-	},
 	['git-rebase'] = {
 		ext = { "git%-rebase%-todo" },
 	},
