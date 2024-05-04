@@ -2058,6 +2058,9 @@ static int window_newindex(lua_State *L) {
 			}
 			lua_pop(L, 1);
 			return ret;
+		} else if (strcmp(key, "file") == 0 && lua_isstring(L, 3)) {
+			const char* filename = lua_tostring(L, 3);
+			vis_window_change_file(win, filename);
 		}
 	}
 
