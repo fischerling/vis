@@ -13,3 +13,4 @@
 *.gcov
 *.html
 *.d
+.cache/
