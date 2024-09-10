@@ -30,12 +30,12 @@ for t in $test_files; do
 	printf "%-30s" "$t"
 	$VIS "$t.in" < /dev/null 2> /dev/null > "$t.busted"
 
-	if [ $? -ne 0 ]; then
-		printf "FAIL\n"
-		cat "$t.busted"
-	else
+	if grep -F -q '0 failures / 0 errors / 0 pending' "${t}.busted"; then
 		TESTS_OK=$((TESTS_OK + 1))
 		printf "OK\n"
+	else
+		printf "FAIL\n"
+		cat "$t.busted"
 	fi
 done
 
