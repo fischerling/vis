@@ -1807,6 +1807,8 @@ static const struct luaL_Reg registers_funcs[] = {
  */
 /***
  * The file being displayed in this window.
+ * Changing the value to a file path will replace the current file with a new
+ * one for the specified path.
  * @tfield File file
  */
 /***
