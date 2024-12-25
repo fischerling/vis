@@ -153,7 +153,7 @@ static const KeyBinding prompt_up_binding = {
 
 static const KeyBinding prompt_tab_binding = {
 	.key = "<Tab>",
-	.alias = "<C-x><C-o>",
+	.alias = "<C-x><C-f>",
 };
 
 void vis_prompt_show(Vis *vis, const char *title) {
