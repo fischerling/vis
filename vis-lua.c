@@ -2813,6 +2813,51 @@ static int file_text_object(lua_State *L) {
 	return 1;
 }
 
+/***
+ * Get position in a line.
+ *
+ * @function pos_by_linecol
+ * @tparam int lineno the line number of the line
+ * @tparam[opt] int col the optional column
+ * @treturn int pos the position in the line, or `nil` if invalid
+ */
+static int file_pos_by_linecol(lua_State *L) {
+	File *file = obj_ref_check(L, 1, VIS_LUA_TYPE_FILE);
+	size_t lineno = lua_tounsigned(L, 2);
+	size_t pos = text_lineno_by_pos(file->text, lineno);
+	if (pos == EPOS)
+		lua_pushnil(L);
+	else {
+		if (lua_gettop(L) == 3) {
+			pos += lua_tounsigned(L, 3);
+		}
+		lua_pushunsigned(L, pos);
+	}
+
+	return 1;
+}
+
+/***
+ * Get line and column of position.
+ *
+ * @function linecol_by_pos
+ * @tparam int lineno the line number of the line
+ * @tparam[opt] int col the optional column
+ * @treturn int lineno the 1-based line number of the position
+ * @treturn int col the 1-based column of the position
+ */
+static int file_linecol_by_pos(lua_State *L) {
+	File *file = obj_ref_check(L, 1, VIS_LUA_TYPE_FILE);
+	size_t pos = checkpos(L, 2);
+
+	size_t lineno = text_lineno_by_pos(file->text, pos);
+	lua_pushunsigned(L, lineno);
+	size_t col = text_line_char_get(file->text, pos) + 1;
+	lua_pushunsigned(L, col);
+	return 2;
+
+}
+
 static const struct luaL_Reg file_funcs[] = {
 	{ "__index", file_index },
 	{ "__newindex", file_newindex },
@@ -2822,6 +2867,8 @@ static const struct luaL_Reg file_funcs[] = {
 	{ "content", file_content },
 	{ "mark_set", file_mark_set },
 	{ "mark_get", file_mark_get },
+	{ "pos_by_linecol", file_pos_by_linecol },
+	{ "linecol_by_pos", file_linecol_by_pos },
 	{ NULL, NULL },
 };
 
