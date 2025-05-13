@@ -2824,12 +2824,12 @@ static int file_text_object(lua_State *L) {
 static int file_pos_by_linecol(lua_State *L) {
 	File *file = obj_ref_check(L, 1, VIS_LUA_TYPE_FILE);
 	size_t lineno = lua_tounsigned(L, 2);
-	size_t pos = text_lineno_by_pos(file->text, lineno);
+	size_t pos = text_pos_by_lineno(file->text, lineno);
 	if (pos == EPOS)
 		lua_pushnil(L);
 	else {
 		if (lua_gettop(L) == 3) {
-			pos += lua_tounsigned(L, 3);
+			pos += lua_tounsigned(L, 3) - 1;
 		}
 		lua_pushunsigned(L, pos);
 	}
