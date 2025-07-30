@@ -2794,7 +2794,9 @@ static int file_pos_by_linecol(lua_State *L) {
 		lua_pushnil(L);
 	else {
 		if (lua_gettop(L) == 3) {
-			pos += lua_tounsigned(L, 3) - 1;
+			// The number of characters to skip to get to the column.
+			size_t chars_to_col = lua_tounsigned(L, 3) - 1;
+			pos = text_line_char_set(file->text, pos, chars_to_col);
 		}
 		lua_pushunsigned(L, pos);
 	}
