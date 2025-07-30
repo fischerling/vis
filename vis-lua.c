@@ -2779,7 +2779,7 @@ static int file_text_object(lua_State *L) {
 }
 
 /***
- * Get position in a line.
+ * Get position by line and column.
  *
  * @function pos_by_linecol
  * @tparam int lineno the line number of the line
@@ -2805,7 +2805,7 @@ static int file_pos_by_linecol(lua_State *L) {
 }
 
 /***
- * Get line and column of position.
+ * Get line and column by position.
  *
  * @function linecol_by_pos
  * @tparam int lineno the line number of the line
@@ -2822,7 +2822,6 @@ static int file_linecol_by_pos(lua_State *L) {
 	size_t col = text_line_char_get(file->text, pos) + 1;
 	lua_pushunsigned(L, col);
 	return 2;
-
 }
 
 static const struct luaL_Reg file_funcs[] = {
