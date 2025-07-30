@@ -62,7 +62,7 @@
 </p>
     <h3>Info:</h3>
     <ul>
-        <li><strong>Release</strong>: 1c86c61</li>
+        <li><strong>Release</strong>: de0a5a0</li>
         <li><strong>License</strong>: ISC</li>
         <li><strong>Author</strong>: Marc André Tanner</li>
     </ul>
@@ -149,10 +149,6 @@
 	<tr>
 	<td class="name" nowrap><a href="#vis:communicate">vis:communicate(name, command)</a></td>
 	<td class="summary">Open new process and return its input stream (stdin).</td>
-	</tr>
-	<tr>
-	<td class="name" nowrap><a href="#vis:complete_command">vis:complete_command(prefix)</a></td>
-	<td class="summary">Let user pick a command matching the given prefix.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#vis:exit">vis:exit(code)</a></td>
@@ -325,7 +321,7 @@
 	<td class="summary">Set window status line.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#window:style">window:style(id, start, finish)</a></td>
+	<td class="name" nowrap><a href="#window:style">window:style(id, start, finish[, keep_non_default])</a></td>
 	<td class="summary">Style a window range.</td>
 	</tr>
 	<tr>
@@ -333,7 +329,7 @@
 	<td class="summary">Define a display style.</td>
 	</tr>
 	<tr>
-	<td class="name" nowrap><a href="#window:style_pos">window:style_pos(id, x, y)</a></td>
+	<td class="name" nowrap><a href="#window:style_pos">window:style_pos(id, x, y[, keep_non_default])</a></td>
 	<td class="summary">Style the single terminal cell at the given coordinates, relative to this window.</td>
 	</tr>
 	<tr>
@@ -428,7 +424,7 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#file:linecol_by_pos">file:linecol_by_pos(lineno[, col])</a></td>
-	<td class="summary">Get line and column of position.</td>
+	<td class="summary">Get line and column by position.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#file:lines_iterator">file:lines_iterator()</a></td>
@@ -448,7 +444,7 @@
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#file:pos_by_linecol">file:pos_by_linecol(lineno[, col])</a></td>
-	<td class="summary">Get position in a line.</td>
+	<td class="summary">Get position by line and column.</td>
 	</tr>
 	<tr>
 	<td class="name" nowrap><a href="#file:text_object_longword">file:text_object_longword(pos)</a></td>
@@ -1092,41 +1088,6 @@
     <ol>
 
         the file handle to write data to the process, in case of error the return values are equivalent to <a href="https://www.lua.org/manual/5.1/manual.html#pdf-io.open">io.open</a> error values.
-    </ol>
-
-
-
-
-</dd>
-    <dt>
-    <a name = "vis:complete_command"></a>
-    <strong>vis:complete_command(prefix)</strong>
-    </dt>
-    <dd>
-    Let user pick a command matching the given prefix.
-<p> The editor core will be blocked while the external process is running.
-
-
-
-    <h3>Parameters:</h3>
-    <ul>
-        <li><span class="parameter">prefix</span>
-            <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-         the prefix of the command to be completed
-        </li>
-    </ul>
-
-    <h3>Returns:</h3>
-    <ol>
-        <li>
-           <span class="types"><span class="type">int</span></span>
-        code the exit status of the executed command</li>
-        <li>
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        stdout the data written to stdout</li>
-        <li>
-           <span class="types"><a class="type" href="https://www.lua.org/manual/5.1/manual.html#5.4">string</a></span>
-        stderr the data written to stderr</li>
     </ol>
 
 
@@ -2440,7 +2401,7 @@ vis:<span class="function-name">map</span>(vis.modes.NORMAL, <span class="string
 </dd>
     <dt>
     <a name = "window:style"></a>
-    <strong>window:style(id, start, finish)</strong>
+    <strong>window:style(id, start, finish[, keep_non_default])</strong>
     </dt>
     <dd>
     Style a window range.
@@ -2460,6 +2421,11 @@ vis:<span class="function-name">map</span>(vis.modes.NORMAL, <span class="string
         <li><span class="parameter">finish</span>
             <span class="types"><span class="type">int</span></span>
          the end position
+        </li>
+        <li><span class="parameter">keep_non_default</span>
+            <span class="types"><span class="type">bool</span></span>
+         whether non-default style values should be kept
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -2518,7 +2484,7 @@ vis:<span class="function-name">map</span>(vis.modes.NORMAL, <span class="string
 </dd>
     <dt>
     <a name = "window:style_pos"></a>
-    <strong>window:style_pos(id, x, y)</strong>
+    <strong>window:style_pos(id, x, y[, keep_non_default])</strong>
     </dt>
     <dd>
     Style the single terminal cell at the given coordinates, relative to this window.
@@ -2540,6 +2506,11 @@ vis:<span class="function-name">map</span>(vis.modes.NORMAL, <span class="string
         <li><span class="parameter">y</span>
             <span class="types"><span class="type">int</span></span>
          See above
+        </li>
+        <li><span class="parameter">keep_non_default</span>
+            <span class="types"><span class="type">bool</span></span>
+         whether non-default style values should be kept
+         (<em>optional</em>)
         </li>
     </ul>
 
@@ -3133,7 +3104,7 @@ win.selection.pos = pos + #data</pre>
     <strong>file:linecol_by_pos(lineno[, col])</strong>
     </dt>
     <dd>
-    Get line and column of position.
+    Get line and column by position.
 
 
     <h3>Parameters:</h3>
@@ -3287,7 +3258,7 @@ win.selection.pos = pos + #data</pre>
     <strong>file:pos_by_linecol(lineno[, col])</strong>
     </dt>
     <dd>
-    Get position in a line.
+    Get position by line and column.
 
 
     <h3>Parameters:</h3>
@@ -4094,7 +4065,7 @@ win.selection.pos = pos + #data</pre>
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/lunarmodules/LDoc">LDoc 1.5.0</a></i>
-<i style="float:right;">Last updated 2025-05-15 03:41:54 </i>
+<i style="float:right;">Last updated 2025-07-30 16:14:07 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
