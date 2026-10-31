@@ -94,6 +94,24 @@ local modes = {
 local plugins = {}
 vis.plugins = plugins
 
+-- Function to load plugins with name automatically
+_G.load = function(path, name)
+	local plugin = require(path)
+	if plugin == nil then
+		return nil
+	end
+	if plugin.name == nil and name == nil then
+		-- if plugin have no name field, nor user provided name than we take from path 
+		plugin.name = path:match("([^/\\]+)$")
+	elseif plugin.name == nil and name ~= nil then
+		-- Else put user provided name as plugin name
+		plugin.name = name
+	end
+	
+	vis.plugins[plugin.name] = plugin
+	return vis.plugins[name]
+end
+
 vis.events.subscribe(vis.events.WIN_STATUS, function(win)
 	local left_parts = {}
 	local right_parts = {}
